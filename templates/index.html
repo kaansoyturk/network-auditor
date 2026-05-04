@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Network Auditor</title>
+    <style>
+        body { font-family: monospace; background: #0d1117; color: #c9d1d9; padding: 20px; }
+        h1 { color: #58a6ff; }
+        h2 { color: #f0883e; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        th { background: #161b22; color: #58a6ff; padding: 8px; text-align: left; }
+        td { padding: 6px 8px; border-bottom: 1px solid #21262d; font-size: 13px; }
+        .alert-row { color: #f85149; }
+        .badge-tcp { color: #3fb950; }
+        .badge-udp { color: #d2a8ff; }
+        .badge-other { color: #8b949e; }
+    </style>
+</head>
+<body>
+    <h1>🛡️ Network Auditor Dashboard</h1>
+    <p id="last-update" style="color:#8b949e; font-size:12px;"></p>
+
+    <h2>⚠️ Uyarılar</h2>
+    <table id="alerts-table">
+        <tr><th>Zaman</th><th>Tür</th><th>Kaynak IP</th><th>Detay</th></tr>
+    </table>
+
+    <h2>📦 Son Paketler</h2>
+    <table id="packets-table">
+        <tr><th>Zaman</th><th>Kaynak</th><th>Hedef</th><th>Protokol</th><th>Boyut</th></tr>
+    </table>
+
+    <script>
+        async function refresh() {
+            // Uyarılar
+            const alertRes = await fetch("/api/alerts");
+            const alerts = await alertRes.json();
+            const aTable = document.getElementById("alerts-table");
+            aTable.innerHTML = "<tr><th>Zaman</th><th>Tür</th><th>Kaynak IP</th><th>Detay</th></tr>";
+            if (alerts.length === 0) {
+                aTable.innerHTML += "<tr><td colspan='4' style='color:#3fb950'>✅ Şüpheli aktivite yok</td></tr>";
+            } else {
+                alerts.forEach(a => {
+                    aTable.innerHTML += `<tr class="alert-row">
+                        <td>${a.timestamp.split("T")[1].split(".")[0]}</td>
+                        <td>${a.type}</td>
+                        <td>${a.src_ip}</td>
+                        <td>${a.detail}</td>
+                    </tr>`;
+                });
+            }
+
+            // Paketler
+            const pktRes = await fetch("/api/packets");
+            const pkts = await pktRes.json();
+            const pTable = document.getElementById("packets-table");
+            pTable.innerHTML = "<tr><th>Zaman</th><th>Kaynak</th><th>Hedef</th><th>Protokol</th><th>Boyut</th></tr>";
+            pkts.forEach(p => {
+                const badgeClass = p.protocol === "TCP" ? "badge-tcp" : p.protocol === "UDP" ? "badge-udp" : "badge-other";
+                pTable.innerHTML += `<tr>
+                    <td>${p.timestamp.split("T")[1].split(".")[0]}</td>
+                    <td>${p.src_ip}</td>
+                    <td>${p.dst_ip}</td>
+                    <td class="${badgeClass}">${p.protocol}</td>
+                    <td>${p.size} byte</td>
+                </tr>`;
+            });
+
+            document.getElementById("last-update").textContent = "Son güncelleme: " + new Date().toLocaleTimeString();
+        }
+
+        refresh();
+        setInterval(refresh, 3000);
+    </script>
+</body>
+</html>
