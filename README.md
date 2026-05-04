@@ -7,6 +7,8 @@ Gerçek zamanlı ağ trafiği analiz ve anomali tespit sistemi.
 - Ağ trafiğini gerçek zamanlı dinler ve kaydeder
 - Port tarama saldırılarını tespit eder
 - Büyük veri transferlerini tespit eder
+- IP adreslerinin coğrafi konumunu tespit eder
+- Şüpheli aktivitelerde otomatik e-posta uyarısı gönderir
 - Web dashboard üzerinden canlı izleme sağlar
 
 ## 🛠️ Teknolojiler
@@ -15,6 +17,8 @@ Gerçek zamanlı ağ trafiği analiz ve anomali tespit sistemi.
 - **Scapy** — Paket yakalama
 - **Flask** — Web dashboard
 - **SQLite** — Veri depolama
+- **ip-api.com** — IP konum tespiti
+- **Gmail SMTP** — E-posta uyarıları
 
 ## 🚀 Kurulum
 
@@ -31,6 +35,17 @@ source venv/bin/activate
 pip install scapy flask
 ```
 
+## ⚙️ Yapılandırma
+
+`emailer.py` dosyası oluştur ve şu bilgileri gir:
+
+```python
+GMAIL_USER = "gmail_adresin@gmail.com"
+GMAIL_APP_PASSWORD = "gmail_uygulama_sifren"
+ALERT_RECIPIENT = "uyari_gidecek_adres@gmail.com"
+```
+
+Gmail uygulama şifresi almak için:https://myaccount.google.com/apppasswords
 ## ▶️ Kullanım
 
 Terminal 1 — Paket yakalama:
@@ -50,6 +65,8 @@ Tarayıcıda aç: `http://localhost:5050`
 - ✅ Gerçek zamanlı paket izleme
 - ✅ Port tarama tespiti
 - ✅ Büyük transfer uyarısı
+- ✅ IP konum tespiti
+- ✅ Otomatik e-posta uyarısı
 - ✅ Web tabanlı dashboard
 - ✅ SQLite veritabanı kaydı
 
