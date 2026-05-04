@@ -14,6 +14,7 @@
         .badge-tcp { color: #3fb950; }
         .badge-udp { color: #d2a8ff; }
         .badge-other { color: #8b949e; }
+        .location { color: #8b949e; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -27,12 +28,11 @@
 
     <h2>📦 Son Paketler</h2>
     <table id="packets-table">
-        <tr><th>Zaman</th><th>Kaynak</th><th>Hedef</th><th>Protokol</th><th>Boyut</th></tr>
+        <tr><th>Zaman</th><th>Kaynak IP</th><th>Konum</th><th>Hedef</th><th>Protokol</th><th>Boyut</th></tr>
     </table>
 
     <script>
         async function refresh() {
-            // Uyarılar
             const alertRes = await fetch("/api/alerts");
             const alerts = await alertRes.json();
             const aTable = document.getElementById("alerts-table");
@@ -50,16 +50,16 @@
                 });
             }
 
-            // Paketler
             const pktRes = await fetch("/api/packets");
             const pkts = await pktRes.json();
             const pTable = document.getElementById("packets-table");
-            pTable.innerHTML = "<tr><th>Zaman</th><th>Kaynak</th><th>Hedef</th><th>Protokol</th><th>Boyut</th></tr>";
+            pTable.innerHTML = "<tr><th>Zaman</th><th>Kaynak IP</th><th>Konum</th><th>Hedef</th><th>Protokol</th><th>Boyut</th></tr>";
             pkts.forEach(p => {
                 const badgeClass = p.protocol === "TCP" ? "badge-tcp" : p.protocol === "UDP" ? "badge-udp" : "badge-other";
                 pTable.innerHTML += `<tr>
                     <td>${p.timestamp.split("T")[1].split(".")[0]}</td>
                     <td>${p.src_ip}</td>
+                    <td class="location">📍 ${p.location}</td>
                     <td>${p.dst_ip}</td>
                     <td class="${badgeClass}">${p.protocol}</td>
                     <td>${p.size} byte</td>

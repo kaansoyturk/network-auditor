@@ -12,7 +12,8 @@ def packets():
     data = get_recent_packets()
     return jsonify([{
         "id": r[0], "timestamp": r[1], "src_ip": r[2],
-        "dst_ip": r[3], "protocol": r[4], "size": r[5]
+        "dst_ip": r[3], "protocol": r[4], "size": r[5],
+        "location": r[6] if len(r) > 6 else "Bilinmiyor"
     } for r in data])
 
 @app.route("/api/alerts")

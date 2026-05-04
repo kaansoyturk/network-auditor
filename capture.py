@@ -1,6 +1,7 @@
 from scapy.all import sniff, IP, TCP, UDP
 from database import init_db, log_packet
 from detector import analyze
+from geoip import get_location
 
 def process_packet(packet):
     if IP in packet:
@@ -15,9 +16,11 @@ def process_packet(packet):
         else:
             protocol = "OTHER"
 
-        log_packet(src_ip, dst_ip, protocol, size)
+        location = get_location(src_ip)
+
+        log_packet(src_ip, dst_ip, protocol, size, location)
         analyze(src_ip, dst_ip, protocol, size)
-        print(f"[+] {protocol} | {src_ip} → {dst_ip} | {size} byte")
+        print(f"[+] {protocol} | {src_ip} ({location}) → {dst_ip} | {size} byte")
 
 if __name__ == "__main__":
     init_db()

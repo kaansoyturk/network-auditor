@@ -13,7 +13,8 @@ def init_db():
             src_ip TEXT,
             dst_ip TEXT,
             protocol TEXT,
-            size INTEGER
+            size INTEGER,
+            location TEXT
         )
     ''')
     c.execute('''
@@ -29,11 +30,11 @@ def init_db():
     conn.close()
     print("✅ Veritabanı hazır!")
 
-def log_packet(src_ip, dst_ip, protocol, size):
+def log_packet(src_ip, dst_ip, protocol, size, location="Bilinmiyor"):
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute("INSERT INTO packets VALUES (NULL,?,?,?,?,?)",
-              (datetime.now().isoformat(), src_ip, dst_ip, protocol, size))
+    c.execute("INSERT INTO packets VALUES (NULL,?,?,?,?,?,?)",
+              (datetime.now().isoformat(), src_ip, dst_ip, protocol, size, location))
     conn.commit()
     conn.close()
 
